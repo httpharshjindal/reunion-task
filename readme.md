@@ -1,7 +1,3 @@
-Here is an updated version of the `README.md` for the Task Management System, incorporating the requested features for creating, deleting, updating, sorting, filtering tasks, and displaying statistics.
-
----
-
 # Task Management System
 
 This is a Task Management System built with a full stack approach using Node.js, Express, React, Next.js, and various modern technologies. It allows users to manage tasks, track time spent, view task statistics, and more, with JWT authentication for secure access.
@@ -206,7 +202,3 @@ Now, the frontend will be running on `http://localhost:3000` and the backend on 
 ## License
 
 MIT License
-
----
-
-This updated `README.md` file includes a comprehensive overview of the Task Management System with all the new features (creating, updating, deleting, sorting, and filtering tasks). It also covers the statistics page and the key data points provided. You can further expand on this by adding any other functionality or changes made to the application.
