@@ -1,5 +1,8 @@
 # Task Management System
 
+- Live: https://reunion-task-assignment.vercel.app/tasks
+- Backend: https://reunion-task-3w4d.onrender.com
+
 This is a Task Management System built with a full stack approach using Node.js, Express, React, Next.js, and various modern technologies. It allows users to manage tasks, track time spent, view task statistics, and more, with JWT authentication for secure access.
 
 ## Table of Contents
@@ -21,7 +24,6 @@ This is a Task Management System built with a full stack approach using Node.js,
   - Tailwind CSS
   - ShadCN (UI Library)
   - Accernity UI
-  
 - **Backend:**
   - Node.js
   - Express.js
@@ -124,16 +126,17 @@ Now, the frontend will be running on `http://localhost:3000` and the backend on 
    - `status` (Pending, Completed)
    - `startDate` and `endDate`
    - `priority`
-   
 2. **Update Task**: Users can update existing tasks.
 
 3. **Delete Task**: Tasks can be deleted when no longer required.
 
 4. **Sort Tasks**: Sort tasks based on:
+
    - `startDate` (Ascending/Descending)
    - `endDate` (Ascending/Descending)
 
 5. **Filter Tasks**:
+
    - By `status` (Completed, Pending)
    - By `priority`
 
