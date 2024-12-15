@@ -42,7 +42,7 @@ type filter = {
 };
 const Tasks = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedIds, setSelectedId] = useState<number[]>([]);
   const [filter, setFilter] = useState<filter>({
@@ -64,7 +64,7 @@ const Tasks = () => {
         headers: {
           Authorization: localStorage.getItem("token"),
         },
-        data: { ids: selectedIds }
+        data: { ids: selectedIds },
       })
         .then((res) => {
           console.log("Tasks deleted:", res.data);
@@ -103,7 +103,11 @@ const Tasks = () => {
   }, [filter]);
 
   if (loading) {
-    return <LoadingComponent />;
+    return (
+      <div className="w-full h-full">
+        <LoadingComponent />
+      </div>
+    );
   }
   return (
     <div>
