@@ -6,11 +6,7 @@ import taskRouter from "./routes/task";
 import statsRouter from "./routes/stats";
 const app = express();
 const PORT = process.env.PORT || 3005;
-app.use(cors({
-  origin: 'https://reunion-task-assignment-756imx2s2-mediums-projects.vercel.app',
-  methods: ['GET', 'POST', 'DELETE', 'PUT'],
-  allowedHeaders: ['Authorization', 'Content-Type'],
-}));
+app.use(cors());
 app.use(express.json());
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/task", taskRouter);
