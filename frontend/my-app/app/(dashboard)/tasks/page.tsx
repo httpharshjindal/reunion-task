@@ -55,6 +55,7 @@ const Tasks = () => {
   const sendDeleteRequest = () => {
     if (!selectedIds) {
       setError("no id selected");
+      alert(error);
       return;
     }
     if (selectedIds) {
