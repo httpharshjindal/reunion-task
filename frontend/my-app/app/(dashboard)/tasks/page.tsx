@@ -61,7 +61,7 @@ const Tasks = () => {
     if (selectedIds) {
       axios({
         method: "delete",
-        url: "api/v1/task",
+        url: `${process.env.NEXT_PUBLIC_BACKEND_URL}/task`,
         headers: {
           Authorization: localStorage.getItem("token"),
         },
