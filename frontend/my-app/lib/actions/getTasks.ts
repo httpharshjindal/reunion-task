@@ -3,7 +3,7 @@ import axios from "axios";
 const getTasks = async (filter: any) => {
   try {
     const response = await axios.get(
-      `${process.env.NEXT_PUBLIC_BACKEND_URL}/task/bulk`,
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/task/bulk`,
       {
         params: {
           order: filter.order,

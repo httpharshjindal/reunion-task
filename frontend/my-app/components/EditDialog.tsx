@@ -58,7 +58,7 @@ export function EditDialogBox({ task }: { task: any }) {
       setError(null);
       axios
         .put(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/task/${task.id}`,
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/task/${task.id}`,
           {
             title: title,
             description: description,

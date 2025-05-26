@@ -55,7 +55,7 @@ export function CreateDialog() {
       setError(null);
       axios
         .post(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/task`,
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/task`,
           {
             title: title,
             description: description,

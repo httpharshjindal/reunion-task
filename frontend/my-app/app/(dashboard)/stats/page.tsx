@@ -17,7 +17,7 @@ const Dashboard = () => {
 
   useEffect(() => {
     axios
-      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/stats`, {
+      .get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/stats`, {
         headers: {
           Authorization: localStorage.getItem("token"),
         },

@@ -36,7 +36,7 @@ export default function Component() {
       setError(null);
       axios
         .post<SignupResponse>(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/signin`,
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/auth/signin`,
           {
             email: email,
             password: password,
@@ -56,7 +56,7 @@ export default function Component() {
           console.error("Error occurred:", err.response?.data || err.message);
           setError(
             err.response?.data?.error ||
-              "Something went wrong. Please try again."
+            "Something went wrong. Please try again."
           );
           setLoading(false);
         });
@@ -90,9 +90,8 @@ export default function Component() {
                 onChange={(e) => {
                   setEmail(e.target.value);
                 }}
-                className={`${
-                  isEmailValid ? "" : " outline outline-1 outline-red-700"
-                }`}
+                className={`${isEmailValid ? "" : " outline outline-1 outline-red-700"
+                  }`}
                 required
               />
               {!isEmailValid && (
@@ -108,9 +107,8 @@ export default function Component() {
                 onChange={(e) => {
                   setPassword(e.target.value.toString());
                 }}
-                className={`${
-                  isPasswordValid ? "" : " outline outline-1 outline-red-700"
-                }`}
+                className={`${isPasswordValid ? "" : " outline outline-1 outline-red-700"
+                  }`}
                 required
               />
               {!isPasswordValid && (

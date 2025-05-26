@@ -44,7 +44,7 @@ export default function Component() {
       setError(null);
       axios
         .post<SignupResponse>(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/signup`,
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/auth/signup`,
           {
             username: username,
             email: email,

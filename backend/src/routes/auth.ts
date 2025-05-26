@@ -15,6 +15,7 @@ authRouter.post("/signup", async (req: any, res: any) => {
       error: "invalid inputs",
     });
   }
+  console.log(req.body);
   const existingUser = await prisma.user.findFirst({
     where: {
       email: req.body.email,
@@ -36,6 +37,7 @@ authRouter.post("/signup", async (req: any, res: any) => {
       },
     });
     if (user) {
+      console.log(user);
       const userId = user.id;
       const token = sign({ userId }, SECRET_KEY);
       return res.status(201).json({

@@ -13,7 +13,7 @@ interface PriorityTaskStats {
   timeRemaining: number;
 }
 
-statsRouter.get("/", authMiddleware, async (req: Request, res: Response) => {
+statsRouter.get("/", async (req: Request, res: Response) => {
   try {
     // Get the user ID from the authenticated request
     const userId = req.userId;

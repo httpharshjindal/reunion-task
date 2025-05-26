@@ -4,11 +4,13 @@
   "main": "dist/index.js",
 "scripts": {
     "dev": "npm run build && npm run start",
-    "build": "npx esbuild ./src/index.ts --bundle --platform=node --outfile=dist/index.js --loader:.html=text --external:mock-aws-s3 --external:aws-sdk --external:nock --external:bcrypt",
+    "build": "npx prisma generate && npx esbuild ./src/index.ts --bundle --platform=node --outfile=dist/index.js --loader:.html=text --external:mock-aws-s3 --external:aws-sdk --external:nock --external:bcrypt",
     "start": "node dist/index.js",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev"
   },
   "prisma": {
   "schema": "db/prisma/schema.prisma"
