@@ -66,7 +66,7 @@ const Tasks = () => {
         },
         data: { ids: selectedIds },
       })
-        .then((res) => {
+        .then(() => {
           window.location.reload();
         })
         .catch((err) => {
@@ -137,9 +137,8 @@ const Tasks = () => {
           </DropdownMenu>
           <DropdownMenu>
             <DropdownMenuTrigger
-              className={`${
-                filter.order ? "bg-zinc-300" : ""
-              } px-4 py-1 outline-none rounded-lg hover:bg-zinc-200`}
+              className={`${filter.order ? "bg-zinc-300" : ""
+                } px-4 py-1 outline-none rounded-lg hover:bg-zinc-200`}
             >
               <div className={`flex justify-center items-center gap-1`}>
                 <FaSortAlphaDownAlt />
@@ -167,9 +166,8 @@ const Tasks = () => {
 
           <DropdownMenu>
             <DropdownMenuTrigger
-              className={`${
-                filter.status ? "bg-zinc-300" : ""
-              } px-4 py-1 outline-none rounded-lg hover:bg-zinc-200`}
+              className={`${filter.status ? "bg-zinc-300" : ""
+                } px-4 py-1 outline-none rounded-lg hover:bg-zinc-200`}
             >
               <div className="flex justify-center items-center gap-1">
                 <MdOutlinePendingActions />
@@ -197,9 +195,8 @@ const Tasks = () => {
 
           <DropdownMenu>
             <DropdownMenuTrigger
-              className={`${
-                filter.priority ? "bg-zinc-300" : ""
-              } px-4 py-1 outline-none rounded-lg hover:bg-zinc-200`}
+              className={`${filter.priority ? "bg-zinc-300" : ""
+                } px-4 py-1 outline-none rounded-lg hover:bg-zinc-200`}
             >
               <div className="flex justify-center items-center gap-1">
                 <MdOutlinePriorityHigh />
