@@ -3,6 +3,7 @@ import { sign } from "jsonwebtoken";
 import { signupBody, signinBody } from "../types";
 import prisma from "../lib/prismaClient";
 import { hash, compare } from "bcryptjs";
+
 const app = express();
 const authRouter = express.Router();
 const SECRET_KEY = process.env.SECRET_KEY as string;
@@ -12,20 +13,23 @@ authRouter.post("/signup", async (req: any, res: any) => {
   const { success } = signupBody.safeParse(req.body);
   if (!success) {
     return res.status(400).json({
-      error: "invalid inputs",
+      error: "Invalid inputs",
     });
   }
-  const existingUser = await prisma.user.findFirst({
-    where: {
-      email: req.body.email,
-    },
-  });
-  if (existingUser) {
-    return res.status(409).json({
-      error: "user Already Exists",
-    });
-  }
+
   try {
+    const existingUser = await prisma.user.findFirst({
+      where: {
+        email: req.body.email,
+      },
+    });
+
+    if (existingUser) {
+      return res.status(409).json({
+        error: "User already exists",
+      });
+    }
+
     const hashedPassword = await hash(req.body.password, 10);
 
     const user = await prisma.user.create({
@@ -35,16 +39,20 @@ authRouter.post("/signup", async (req: any, res: any) => {
         password: hashedPassword,
       },
     });
+
     if (user) {
       const token = sign({ userId: user.id }, SECRET_KEY);
       return res.status(201).json({
         token: token,
         userId: user.id,
+        email: user.email,
       });
     }
   } catch (e) {
+    console.error("Error during signup:", e);
     return res.status(400).json({
-      error: e,
+      error: "Something went wrong during signup",
+      message: e instanceof Error ? e.message : "Unknown error"
     });
   }
 });
@@ -53,7 +61,7 @@ authRouter.post("/signin", async (req: any, res: any) => {
   const { success } = signinBody.safeParse(req.body);
   if (!success) {
     return res.status(400).json({
-      error: "invalid inputs",
+      error: "Invalid inputs",
     });
   }
 
@@ -63,21 +71,30 @@ authRouter.post("/signin", async (req: any, res: any) => {
         email: req.body.email,
       },
     });
+
     if (!user) {
       return res.status(404).json({
-        error: "user not found",
+        error: "User not found",
       });
     }
+
     const validate = await compare(req.body.password, user.password);
     if (!validate) {
-      return res.status(401).json({ error: "Incorrect Password" });
+      return res.status(401).json({ error: "Incorrect password" });
     }
-    const token = await sign({ userId: user.id }, SECRET_KEY);
-    return res.status(200).json({ token: token });
+
+    const token = sign({ userId: user.id }, SECRET_KEY);
+    return res.status(200).json({
+      token: token,
+      userId: user.id,
+      email: user.email
+    });
   } catch (e) {
-    res
-      .status(400)
-      .json({ error: e, msg: "something went wrong while loggin in" });
+    console.error("Error during signin:", e);
+    res.status(400).json({
+      error: "Something went wrong while signing in",
+      message: e instanceof Error ? e.message : "Unknown error"
+    });
   }
 });
 

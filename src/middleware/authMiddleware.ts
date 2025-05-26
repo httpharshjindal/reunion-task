@@ -53,13 +53,14 @@ const authMiddleware = (
 
     try {
       const decoded = jwt.verify(token, SECRET_KEY) as JwtPayloadWithUserId;
+      
       if (!decoded.userId) {
         res.status(401).json({ error: "Invalid token: missing user ID" });
         return;
       }
+
       // Set userId in request object
       req.userId = decoded.userId;
-      console.log(req.userId);
       next();
     } catch (jwtError) {
       if (jwtError instanceof jwt.TokenExpiredError) {

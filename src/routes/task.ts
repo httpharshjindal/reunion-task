@@ -3,12 +3,9 @@ import authMiddleware from "../middleware/authMiddleware";
 import prisma from "../lib/prismaClient";
 import { createTaskBody } from "../types";
 
-const app = express();
 const taskRouter = express.Router();
 
-app.use(express.json());
-
-taskRouter.get("/bulk", async (req: Request, res: Response) => {
+taskRouter.get("/bulk", authMiddleware, async (req: Request, res: Response) => {
   try {
     const { priority, status, order } = req.query;
     const filter: any = {
@@ -48,7 +45,7 @@ taskRouter.get("/bulk", async (req: Request, res: Response) => {
   }
 });
 
-taskRouter.get("/:id", async (req: Request, res: Response) => {
+taskRouter.get("/:id", authMiddleware, async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
   try {
     const task = await prisma.tasks.findFirst({
@@ -73,7 +70,7 @@ taskRouter.get("/:id", async (req: Request, res: Response) => {
   }
 });
 
-taskRouter.post("/", async (req: Request, res: Response) => {
+taskRouter.post("/", authMiddleware, async (req: Request, res: Response) => {
   const { success } = createTaskBody.safeParse(req.body);
   if (!success) {
     res.status(400).json({ error: "Invalid inputs" });
@@ -111,7 +108,7 @@ taskRouter.post("/", async (req: Request, res: Response) => {
   }
 });
 
-taskRouter.put("/:id", async (req: Request, res: Response) => {
+taskRouter.put("/:id", authMiddleware, async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
   try {
     const existingTask = await prisma.tasks.findFirst({
@@ -153,7 +150,7 @@ taskRouter.put("/:id", async (req: Request, res: Response) => {
   }
 });
 
-taskRouter.delete("/", async (req: Request, res: Response) => {
+taskRouter.delete("/", authMiddleware, async (req: Request, res: Response) => {
   const { ids } = req.body;
   if (!Array.isArray(ids) || ids.length === 0) {
     res.status(400).json({ error: "No task IDs provided or invalid input" });
