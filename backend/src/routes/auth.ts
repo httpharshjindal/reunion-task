@@ -15,7 +15,6 @@ authRouter.post("/signup", async (req: any, res: any) => {
       error: "invalid inputs",
     });
   }
-  console.log(req.body);
   const existingUser = await prisma.user.findFirst({
     where: {
       email: req.body.email,
@@ -37,12 +36,11 @@ authRouter.post("/signup", async (req: any, res: any) => {
       },
     });
     if (user) {
-      console.log(user);
       const userId = user.id;
-      const token = sign({ userId }, SECRET_KEY);
+      const token = sign({ email: user.email }, SECRET_KEY);
       return res.status(201).json({
         token: token,
-        userId: userId,
+        email: user.email,
       });
     }
   } catch (e) {
@@ -75,8 +73,7 @@ authRouter.post("/signin", async (req: any, res: any) => {
     if (!validate) {
       return res.status(401).json({ error: "Incorrect Password" });
     }
-    const userId = user.id;
-    const token = await sign({ userId }, SECRET_KEY);
+    const token = await sign({ email: user.email }, SECRET_KEY);
     return res.status(200).json({ token: token });
   } catch (e) {
     res

@@ -16,15 +16,21 @@ interface PriorityTaskStats {
 statsRouter.get("/", async (req: Request, res: Response) => {
   try {
     // Get the user ID from the authenticated request
-    const userId = req.userId;
-    if (!userId) {
+    const email = req.email;
+    if (!email) {
       res.status(400).json({ message: "User not authenticated" });
       return;
     }
-
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+    if (!user) {
+      res.status(400).json({ message: "User not found" });
+      return;
+    }
     // Fetch tasks for the user
     const tasks = await prisma.tasks.findMany({
-      where: { userId },
+      where: { userId: user.id },
     });
 
     if (!tasks.length) {
