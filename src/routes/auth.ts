@@ -37,10 +37,10 @@ authRouter.post("/signup", async (req: any, res: any) => {
     });
     if (user) {
       const userId = user.id;
-      const token = sign({ userId }, SECRET_KEY);
+      const token = sign({ email: user.email }, SECRET_KEY);
       return res.status(201).json({
         token: token,
-        userId: userId,
+        email: user.email,
       });
     }
   } catch (e) {
@@ -73,8 +73,7 @@ authRouter.post("/signin", async (req: any, res: any) => {
     if (!validate) {
       return res.status(401).json({ error: "Incorrect Password" });
     }
-    const userId = user.id;
-    const token = await sign({ userId }, SECRET_KEY);
+    const token = await sign({ email: user.email }, SECRET_KEY);
     return res.status(200).json({ token: token });
   } catch (e) {
     res
