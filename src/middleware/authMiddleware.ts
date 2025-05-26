@@ -59,6 +59,7 @@ const authMiddleware = (
       }
       // Set userId in request object
       req.userId = decoded.userId;
+      console.log(req.userId);
       next();
     } catch (jwtError) {
       if (jwtError instanceof jwt.TokenExpiredError) {
