@@ -23,7 +23,6 @@ const Dashboard = () => {
         },
       })
       .then((res: any) => {
-        console.log(res.data.stats);
         setStats(res.data.stats);
         setLoading(false);
       })

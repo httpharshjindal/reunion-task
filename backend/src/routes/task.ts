@@ -11,15 +11,8 @@ app.use(express.json());
 taskRouter.get("/bulk", async (req: Request, res: Response) => {
   try {
     const { priority, status, order } = req.query;
-    const user = await prisma.user.findUnique({
-      where: { email: req.email },
-    });
-    if (!user) {
-      res.status(400).json({ message: "User not found" });
-      return;
-    }
     const filter: any = {
-      userId: user.id,
+      userId: req.userId
     };
     var sort: any = {};
 
@@ -57,39 +50,41 @@ taskRouter.get("/bulk", async (req: Request, res: Response) => {
 
 taskRouter.get("/:id", async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
-  const user = await prisma.user.findUnique({
-    where: { email: req.email },
-  });
-  if (!user) {
-    res.status(400).json({ message: "User not found" });
-    return;
+  try {
+    const task = await prisma.tasks.findFirst({
+      where: {
+        id: id,
+        userId: req.userId
+      },
+    });
+    
+    if (!task) {
+      res.status(404).json({ message: "Task not found" });
+      return;
+    }
+    
+    res.status(200).json({ message: "Task fetched successfully", task: task });
+  } catch (e) {
+    console.error("Error fetching task:", e);
+    res.status(400).json({
+      message: "Something went wrong while fetching task",
+      error: e instanceof Error ? e.message : "Unknown error"
+    });
   }
-  const task = await prisma.tasks.findUnique({
-    where: {
-      id: id,
-      userId: user.id,
-    },
-  });
-  if (!task) {
-    res.status(404).json({ message: "Tasks not found" });
-    return;
-  }
-  res.status(200).json({ message: "Tasks fetched successfully", task: task });
 });
 
 taskRouter.post("/", async (req: Request, res: Response) => {
   const { success } = createTaskBody.safeParse(req.body);
-  const user = await prisma.user.findUnique({
-    where: { email: req.email },
-  });
-  if (!user) {
-    res.status(400).json({ message: "User not found" });
-    return;
-  }
   if (!success) {
     res.status(400).json({ error: "Invalid inputs" });
     return;
   }
+  
+  if (!req.userId) {
+    res.status(401).json({ error: "User not authenticated" });
+    return;
+  }
+  
   try {
     const task = await prisma.tasks.create({
       data: {
@@ -100,27 +95,37 @@ taskRouter.post("/", async (req: Request, res: Response) => {
         endDate: req.body.endDate,
         updatedDate: req.body.startDate,
         priority: req.body.priority,
-        userId: user.id,
+        userId: req.userId,
       },
     });
-    res
-      .status(200)
-      .json({ message: "Tasks created successfully", task: task.id });
+    res.status(201).json({ 
+      message: "Task created successfully", 
+      taskId: task.id 
+    });
   } catch (e) {
-    res.status(400).json({ error: "Something went wrong", e: e });
+    console.error("Error creating task:", e);
+    res.status(400).json({ 
+      error: "Something went wrong while creating task",
+      message: e instanceof Error ? e.message : "Unknown error"
+    });
   }
 });
 
 taskRouter.put("/:id", async (req: Request, res: Response) => {
   const id = parseInt(req.params.id);
   try {
-    const user = await prisma.user.findUnique({
-      where: { email: req.email },
+    const existingTask = await prisma.tasks.findFirst({
+      where: {
+        id: id,
+        userId: req.userId
+      }
     });
-    if (!user) {
-      res.status(400).json({ message: "User not found" });
+
+    if (!existingTask) {
+      res.status(404).json({ message: "Task not found or unauthorized" });
       return;
     }
+
     const task = await prisma.tasks.update({
       where: {
         id: id,
@@ -132,35 +137,36 @@ taskRouter.put("/:id", async (req: Request, res: Response) => {
         startDate: req.body.startDate,
         endDate: req.body.endDate,
         priority: req.body.priority,
-        updatedDate: req.body.updatedDate,
+        updatedDate: new Date(),
       },
     });
-    res
-      .status(200)
-      .json({ message: "Tasks Updated successfully", task: task.id });
+    res.status(200).json({ 
+      message: "Task updated successfully", 
+      taskId: task.id 
+    });
   } catch (e) {
-    res.status(400).json({ error: "Something went wrong", e: e });
+    console.error("Error updating task:", e);
+    res.status(400).json({ 
+      error: "Something went wrong while updating task",
+      message: e instanceof Error ? e.message : "Unknown error"
+    });
   }
 });
-taskRouter.delete("/", async (req, res) => {
+
+taskRouter.delete("/", async (req: Request, res: Response) => {
   const { ids } = req.body;
   if (!Array.isArray(ids) || ids.length === 0) {
     res.status(400).json({ error: "No task IDs provided or invalid input" });
     return;
   }
-  const user = await prisma.user.findUnique({
-    where: { email: req.email },
-  });
-  if (!user) {
-    res.status(400).json({ message: "User not found" });
-    return;
-  }
+
   try {
     const tasks = await prisma.tasks.deleteMany({
       where: {
         id: {
           in: ids,
         },
+        userId: req.userId
       },
     });
 
@@ -169,7 +175,11 @@ taskRouter.delete("/", async (req, res) => {
       deletedTasksCount: tasks.count,
     });
   } catch (e) {
-    res.status(400).json({ error: "Something went wrong", e: e });
+    console.error("Error deleting tasks:", e);
+    res.status(400).json({ 
+      error: "Something went wrong while deleting tasks",
+      message: e instanceof Error ? e.message : "Unknown error"
+    });
   }
 });
 

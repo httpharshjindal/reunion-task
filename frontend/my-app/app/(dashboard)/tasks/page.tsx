@@ -50,7 +50,6 @@ const Tasks = () => {
     status: null,
     priority: null,
   });
-  console.log(tasks);
 
   const sendDeleteRequest = () => {
     if (!selectedIds) {
@@ -68,7 +67,6 @@ const Tasks = () => {
         data: { ids: selectedIds },
       })
         .then((res) => {
-          console.log("Tasks deleted:", res.data);
           window.location.reload();
         })
         .catch((err) => {
@@ -82,7 +80,6 @@ const Tasks = () => {
       try {
         setError("");
         const response: any = await getTasks(filter);
-        console.log(response.tasks);
         if (response) {
           const sortedTasks = response.tasks.sort(
             (a: any, b: any) => b.taskId - a.taskId

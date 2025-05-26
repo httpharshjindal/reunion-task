@@ -43,7 +43,6 @@ export default function Component() {
           }
         )
         .then((res) => {
-          console.log(res);
           if (res.status >= 200 && res.status < 300) {
             setLoading(false);
           }

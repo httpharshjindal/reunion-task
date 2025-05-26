@@ -15,7 +15,6 @@ const getTasks = async (filter: any) => {
         },
       }
     );
-    console.log(response);
     return response.data;
   } catch (error: any) {
     throw new Error("Failed to fetch tasks: " + error.message)

@@ -16,13 +16,13 @@ interface PriorityTaskStats {
 statsRouter.get("/", async (req: Request, res: Response) => {
   try {
     // Get the user ID from the authenticated request
-    const email = req.email;
-    if (!email) {
+    const userId = req.userId;
+    if (!userId) {
       res.status(400).json({ message: "User not authenticated" });
       return;
     }
     const user = await prisma.user.findUnique({
-      where: { email },
+      where: { id: userId },
     });
     if (!user) {
       res.status(400).json({ message: "User not found" });

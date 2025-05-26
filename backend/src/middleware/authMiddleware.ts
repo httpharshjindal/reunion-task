@@ -6,7 +6,7 @@ import { Request, Response, NextFunction } from "express";
 declare global {
   namespace Express {
     interface Request {
-      email?: string;
+      userId?: number;
     }
   }
 }
@@ -53,14 +53,13 @@ const authMiddleware = (
 
     try {
       const decoded = jwt.verify(token, SECRET_KEY) as JwtPayloadWithUserId;
-      console.log(decoded);
-      if (!decoded.email) {
-        res.status(401).json({ error: "Invalid token: missing email" });
+      if (!decoded.userId) {
+        res.status(401).json({ error: "Invalid token: missing user ID" });
         return;
       }
-
       // Set userId in request object
-      req.email = decoded.email;
+      req.userId = decoded.userId;
+      console.log(req.userId);
       next();
     } catch (jwtError) {
       if (jwtError instanceof jwt.TokenExpiredError) {
