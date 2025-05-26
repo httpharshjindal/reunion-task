@@ -56,6 +56,172 @@ const user = await prisma.user.create({
 - Interceptors for token management
 - Error handling middleware
 
+## Request Flow Diagrams
+
+### 1. Authentication Flow
+
+```
+[Frontend]                    [Backend]
++--------+                    +--------+
+|        |                    |        |
+|  User  |                    | Server |
+|        |                    |        |
++--------+                    +--------+
+     |                             |
+     |  1. Login Request          |
+     |  POST /api/v1/auth/signin  |
+     |  {email, password}         |
+     |--------------------------->|
+     |                           |
+     |  2. Validate Credentials  |
+     |     - Check email         |
+     |     - Verify password     |
+     |                           |
+     |  3. Generate JWT Token    |
+     |     {userId, token}       |
+     |<---------------------------|
+     |                           |
+     |  4. Store Token           |
+     |     localStorage.setItem() |
+     |                           |
+```
+
+### 2. Protected API Request Flow
+
+```
+[Frontend]                    [Backend]
++--------+                    +--------+
+|        |                    |        |
+|  User  |                    | Server |
+|        |                    |        |
++--------+                    +--------+
+     |                             |
+     |  1. API Request            |
+     |  GET /api/v1/tasks         |
+     |  Headers:                  |
+     |  Authorization: Bearer <token>|
+     |--------------------------->|
+     |                           |
+     |  2. Auth Middleware       |
+     |     - Validate token      |
+     |     - Extract userId      |
+     |                           |
+     |  3. Process Request       |
+     |     - Query Database      |
+     |     - Business Logic      |
+     |                           |
+     |  4. Send Response         |
+     |     {data, status}        |
+     |<---------------------------|
+     |                           |
+     |  5. Update UI             |
+     |     - Render Data         |
+     |     - Handle Errors       |
+     |                           |
+```
+
+### 3. Task Creation Flow
+
+```
+[Frontend]                    [Backend]                    [Database]
++--------+                    +--------+                    +--------+
+|        |                    |        |                    |        |
+|  User  |                    | Server |                    | Prisma |
+|        |                    |        |                    |        |
++--------+                    +--------+                    +--------+
+     |                             |                             |
+     |  1. Create Task Request     |                             |
+     |  POST /api/v1/task          |                             |
+     |  {title, description,       |                             |
+     |   priority, dueDate}        |                             |
+     |--------------------------->|                             |
+     |                           |                             |
+     |                           |  2. Validate Request        |
+     |                           |     - Check auth token      |
+     |                           |     - Validate input        |
+     |                           |                             |
+     |                           |  3. Database Operation      |
+     |                           |     prisma.tasks.create()   |
+     |                           |---------------------------->|
+     |                           |                             |
+     |                           |  4. Database Response       |
+     |                           |<----------------------------|
+     |                           |                             |
+     |  5. Success Response      |                             |
+     |     {taskId, status}      |                             |
+     |<---------------------------|                             |
+     |                           |                             |
+     |  6. Update UI             |                             |
+     |     - Add new task        |                             |
+     |     - Show confirmation   |                             |
+     |                           |                             |
+```
+
+### 4. Error Handling Flow
+
+```
+[Frontend]                    [Backend]
++--------+                    +--------+
+|        |                    |        |
+|  User  |                    | Server |
+|        |                    |        |
++--------+                    +--------+
+     |                             |
+     |  1. Request with Error      |
+     |--------------------------->|
+     |                           |
+     |  2. Error Detection        |
+     |     - Validation Error     |
+     |     - Auth Error          |
+     |     - Database Error      |
+     |                           |
+     |  3. Error Response        |
+     |     {error, status}       |
+     |<---------------------------|
+     |                           |
+     |  4. Error Handling        |
+     |     - Show Error Message  |
+     |     - Retry Logic        |
+     |     - Fallback UI        |
+     |                           |
+```
+
+### 5. Data Flow for Task Updates
+
+```
+[Frontend]                    [Backend]                    [Database]
++--------+                    +--------+                    +--------+
+|        |                    |        |                    |        |
+|  User  |                    | Server |                    | Prisma |
+|        |                    |        |                    |        |
++--------+                    +--------+                    +--------+
+     |                             |                             |
+     |  1. Update Task Request     |                             |
+     |  PUT /api/v1/task/:id       |                             |
+     |  {status, priority}         |                             |
+     |--------------------------->|                             |
+     |                           |                             |
+     |                           |  2. Verify Ownership        |
+     |                           |     - Check task belongs    |
+     |                           |       to user              |
+     |                           |                             |
+     |                           |  3. Update Database        |
+     |                           |     prisma.tasks.update()  |
+     |                           |---------------------------->|
+     |                           |                             |
+     |                           |  4. Updated Data           |
+     |                           |<----------------------------|
+     |                           |                             |
+     |  5. Success Response      |                             |
+     |     {updatedTask}         |                             |
+     |<---------------------------|                             |
+     |                           |                             |
+     |  6. Update UI             |                             |
+     |     - Refresh Task List   |                             |
+     |     - Show Success Msg    |                             |
+     |                           |                             |
+```
+
 ## Key Features
 
 1. **User Authentication**
@@ -115,3 +281,77 @@ const user = await prisma.user.create({
 ## Environment Variables
 
 ### Backend (.env)
+```
+DATABASE_URL="postgresql://user:password@localhost:5432/taskdb"
+SECRET_KEY="your-jwt-secret-key"
+PORT=3005
+```
+
+### Frontend (.env)
+```
+REACT_APP_API_URL="http://localhost:3005/api/v1"
+```
+
+## Testing
+
+The application includes both unit and integration tests:
+
+1. **Unit Tests**
+   - Authentication logic
+   - Password hashing
+   - JWT token generation
+   - Database operations
+
+2. **Integration Tests**
+   - API endpoints
+   - Authentication flow
+   - Task management operations
+
+## Error Handling
+
+1. **Backend**
+   - Global error middleware
+   - Type-safe error responses
+   - Detailed error logging
+
+2. **Frontend**
+   - Error boundaries
+   - Toast notifications
+   - Form validation feedback
+
+## Performance Considerations
+
+1. **Backend**
+   - Connection pooling
+   - Query optimization
+   - Caching strategies
+
+2. **Frontend**
+   - Code splitting
+   - Lazy loading
+   - Memoization
+   - Optimized re-renders
+
+## Deployment
+
+1. **Backend**
+   - Node.js environment
+   - Environment variables configuration
+   - Database migration
+
+2. **Frontend**
+   - Static file serving
+   - Environment configuration
+   - Build optimization
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
+
+## License
+
+This project is licensed under the MIT License.
