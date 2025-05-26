@@ -9,14 +9,13 @@ const taskRouter = express.Router();
 app.use(express.json());
 
 taskRouter.get("/bulk", async (req: Request, res: Response) => {
-  var tasks;
   try {
     const { priority, status, order } = req.query;
-    const filter: any = {};
+    const filter: any = {
+      userId: req.userId // Always filter by userId
+    };
     var sort: any = {};
-    if (req.userId) {
-      filter.userId = req.userId;
-    }
+
     if (priority) {
       filter.priority = parseInt(priority as string);
     }
@@ -30,18 +29,21 @@ taskRouter.get("/bulk", async (req: Request, res: Response) => {
       };
     }
 
-    tasks = await prisma.tasks.findMany({
+    const tasks = await prisma.tasks.findMany({
       where: filter,
       orderBy: sort,
     });
-    res
-      .status(200)
-      .json({ message: "Tasks fetched successfully", tasks: tasks });
+
+    res.status(200).json({ 
+      message: "Tasks fetched successfully", 
+      tasks: tasks 
+    });
   } catch (e) {
+    console.error("Error fetching tasks:", e);
     res.status(400).json({
-      message: "Something went wrong while fetching",
-      e: e,
-      tasks: tasks || [],
+      message: "Something went wrong while fetching tasks",
+      error: e instanceof Error ? e.message : "Unknown error",
+      tasks: []
     });
   }
 });
